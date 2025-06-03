@@ -1,0 +1,134 @@
+- name: Deploy E-commerce Application
+  hosts: all
+  become: yes 
+  vars:
+    db_name: ecomdb
+    db_user: ecomuser
+    db_password: "ecompassword" 
+    db_host: localhost
+    project_root: /var/www/html
+    repo_url: https://github.com/kodekloudhub/learning-app-ecommerce.git
+
+  tasks:
+    #--------------------------------------------------
+    # MariaDB Setup
+    #--------------------------------------------------
+    - name: Install MariaDB server
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+
+    - name: Ensure MariaDB configuration directory exists
+      ansible.builtin.file:
+        path: /etc/my.cnf.d
+        state: directory
+        mode: '0755'
+
+    - name: Start and enable MariaDB service
+      ansible.builtin.systemd:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create the application database
+      community.mysql.mysql_db:
+        name: "{{ db_name }}"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock 
+    - name: Create the application database user
+      community.mysql.mysql_user:
+        name: "{{ db_user }}"
+        host: "{{ db_host }}" 
+        password: "{{ db_password }}"
+        priv: "{{ db_name }}.*:ALL" 
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock 
+
+    - name: Create database load script
+      ansible.builtin.copy:
+        dest: "/tmp/db-load-script.sql"
+        content: |
+          USE {{ db_name }};
+          CREATE TABLE IF NOT EXISTS products (
+            id mediumint(8) unsigned NOT NULL auto_increment,
+            Name varchar(255) default NULL,
+            Price varchar(255) default NULL,
+            ImageUrl varchar(255) default NULL,
+            PRIMARY KEY (id)
+          ) AUTO_INCREMENT=1;
+
+          INSERT INTO products (Name,Price,ImageUrl) VALUES
+          ("Laptop","100","c-1.png"),
+          ("Drone","200","c-2.png"),
+          ("VR","300","c-3.png"),
+          ("Tablet","50","c-5.png"),
+          ("Watch","90","c-6.png"),
+          ("Phone Covers","20","c-7.png"),
+          ("Phone","80","c-8.png"),
+          ("Laptop","150","c-4.png")
+          ON DUPLICATE KEY UPDATE Name=VALUES(Name), Price=VALUES(Price), ImageUrl=VALUES(ImageUrl);
+        mode: '0644'
+
+    - name: Load data into the database
+      community.mysql.mysql_db:
+        name: "{{ db_name }}"
+        state: import
+        target: "/tmp/db-load-script.sql"
+        login_unix_socket: /var/lib/mysql/mysql.sock
+
+    #--------------------------------------------------
+    # Apache and PHP Setup
+    #--------------------------------------------------
+    - name: Install Apache (httpd), PHP, and PHP MySQL connector
+      ansible.builtin.yum:
+        name:
+          - httpd
+          - php
+          - php-mysqlnd 
+        state: present
+
+    - name: Configure Apache to serve index.php by default
+      ansible.builtin.lineinfile:
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^(DirectoryIndex\s+)(.*)$'
+        line: '\1index.php \2' # Adds index.php to the list of DirectoryIndex files
+        backrefs: yes
+      notify: Restart httpd
+
+    - name: Start and enable Apache (httpd) service
+      ansible.builtin.systemd:
+        name: httpd
+        state: started
+        enabled: yes
+
+    #--------------------------------------------------
+    # Application Deployment
+    #--------------------------------------------------
+    - name: Install Git
+      ansible.builtin.yum:
+        name: git
+        state: present
+
+    - name: Clone the application repository
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ project_root }}"
+        version: master 
+        force: yes    
+
+    - name: Create .env file with database credentials
+      ansible.builtin.copy:
+        dest: "{{ project_root }}/.env"
+        content: |
+          DB_HOST={{ db_host }}
+          DB_USER={{ db_user }}
+          DB_PASSWORD={{ db_password }}
+          DB_NAME={{ db_name }}
+        owner: apache
+        group: apache
+        mode: '0640' 
+  handlers:
+    - name: Restart httpd
+      ansible.builtin.systemd:
+        name: httpd
+        state: restarted
