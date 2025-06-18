@@ -30,6 +30,27 @@
         state: started
         enabled: yes
 
+    - name: Ensure python3-pip is installed on CentOS 9
+      ansible.builtin.yum:
+        name: python3-pip
+        state: present
+        update_cache: yes # yum update
+      when:
+        - ansible_os_family == "RedHat"
+        - ansible_distribution_major_version == "9"
+          
+    - name: Ensure PyMySQL is installed for Python 3
+        ansible.builtin.pip:
+          name: PyMySQL
+          executable: pip3
+        when: ansible_python_version.startswith('3.')
+  
+      - name: Create the application database
+        community.mysql.mysql_db:
+          name: "{{ db_name }}"
+          state: present
+          login_unix_socket: /var/lib/mysql/mysql.sock
+
     - name: Create the application database
       community.mysql.mysql_db:
         name: "{{ db_name }}"
