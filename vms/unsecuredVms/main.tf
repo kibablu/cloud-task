@@ -72,3 +72,32 @@ resource "google_compute_instance" "centos_vm" {
     on_host_maintenance = "MIGRATE"
   }
 }
+
+resource "google_dns_managed_zone" "primary_zone" {
+  name = "primary-zone"
+  dns_name = "example.com."
+  description = "A primary managed zone for example.com"
+  visibility = "public"
+  force_destroy = true
+  labels = {
+    "environment" = "production"
+  }
+}
+
+# "A" Record for the root domain (example.com)
+resource "google_dns_record_set" "root_a_record" {
+  name = google_dns_managed_zone.primary_zone.dns_name
+  type = "A"
+  ttl = 300
+  managed_zone = google_dns_managed_zone.primary_zone.name
+  rrdatas = ["external IP"]
+}
+
+# "CNAME" Record for the "www" subdomain (www.example.com)
+resource "google_dns_record_set" "www_cname_record" {
+  name = "www.${google_dns_managed_zone.primary_zone.dns_name}"
+  type = "CNAME"
+  ttl = 300
+  managed_zone = google_dns_managed_zone.primary_zone.name
+  rrdatas = [google_dns_managed_zone.primary_zone.dns_name]
+}
