@@ -22,3 +22,8 @@ output "subnetwork_name" {
   description = "Name of the custom subnetwork."
   value       = google_compute_subnetwork.custom_subnet.name
 }
+
+output "zone_dns_name" {
+  value       = google_dns_managed_zone.primary_zone.dns_name
+  description = "The DNS name of the managed zone."
+}
