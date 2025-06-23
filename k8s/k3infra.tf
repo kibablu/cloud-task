@@ -21,7 +21,7 @@ resource "google_compute_network" "k3s_vpc" {
 // Create a custom subnet in us-central1
 resource "google_compute_subnetwork" "k3s_subnet" {
   name          = "k3s-subnet-us-central1"
-  ip_cidr_range = "10.0.1.0/27"     // Example CIDR, provides 30 usable IPs (2^5 - 2)
+  ip_cidr_range = "10.0.0.0/27"     // Example CIDR, provides 30 usable IPs (2^5 - 2)
   network       = google_compute_network.k3s_vpc.id
   region        = "us-central1"
 }
