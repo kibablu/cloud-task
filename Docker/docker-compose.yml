@@ -1,0 +1,36 @@
+version: '3.3'
+services:
+  app:
+    # Build the Docker image from the Dockerfile in the current directory.
+    build: .
+    ports:
+      # Map port 8080 on your host machine to port 80 in the container.
+      - "8080:80"
+    environment:
+      # Pass database connection details to the application as environment variables.
+      DB_HOST: db
+      DB_USER: ecomuser
+      DB_PASSWORD: ecompassword
+      DB_NAME: ecomdb
+    # Ensure the 'db' service is started before the 'app' service.
+    depends_on:
+      - db
+
+  # The 'db' service for your MariaDB database.
+  db:
+    image: mariadb:10.6 
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: verysecretrootpassword
+      MYSQL_DATABASE: ecomdb
+      MYSQL_USER: ecomuser
+      MYSQL_PASSWORD: ecompassword
+    volumes:
+      # Mount the SQL script to initialize the database on first startup.
+      - ./assets/db-load-script.sql:/docker-entrypoint-initdb.d/init.sql
+      # Use a volume to persist database data.
+      - db_data:/var/lib/mysql
+
+# volume for database persistence.
+volumes:
+  db_data:
