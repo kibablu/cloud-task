@@ -1,0 +1,167 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+spec:
+  selector:
+    app: app
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  DB_HOST: db # headless service name for the database
+  DB_NAME: ecomdb
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: Opaque
+data:
+  DB_USER: ZWNvbXVzZXI= # Base64 encoded "ecomuser"
+  DB_PASSWORD: ZWNvbXBhc3N3b3Jk # Base64 encoded "ecompassword"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+        - name: app
+          image: ghcr.io/kibablu/learning-app-ecommerce:master
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_HOST
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_PASSWORD
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_NAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db # used by the StatefulSet and the app's DB_HOST
+spec:
+  selector:
+    app: db
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  clusterIP: None 
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+data:
+  MYSQL_ROOT_PASSWORD: dmVyeXNlY3Jvb3RwYXNzd29yZA== # Base64 encoded "verysecretrootpassword"
+  MYSQL_USER: ZWNvbXVzZXI= # Base64 encoded "ecomuser"
+  MYSQL_PASSWORD: ZWNvbXBhc3N3b3Jk # Base64 encoded "ecompassword"
+---
+apiVersion: v1
+kind: ConfigMap 
+metadata:
+  name: db-init-script
+data:
+  init.sql: | # The content of your db-load-script.sql
+    USE ecomdb;
+    CREATE TABLE products (id mediumint(8) unsigned NOT NULL auto_increment,Name varchar(255) default NULL,Price varchar(255) default NULL, ImageUrl varchar(255) default NULL,PRIMARY KEY (id)) AUTO_INCREMENT=1;
+
+    INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("Drone","200","c-2.png"),("VR","300","c-3.png"),("Tablet","50","c-5.png"),("Watch","90","c-6.png"),("Phone Covers","20","c-7.png"),("Phone","80","c-8.png"),("Laptop","150","c-4.png");
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db-statefulset
+spec:
+  serviceName: db # Must match the Headless Service name
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      volumes: 
+        - name: db-init-volume
+          configMap:
+            name: db-init-script
+      containers:
+        - name: db
+          image: mariadb:10.6
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              value: ecomdb
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: MYSQL_PASSWORD
+          volumeMounts:
+            - name: db-data # matches the volumeClaimTemplates name
+              mountPath: /var/lib/mysql
+            - name: db-init-volume # Mount the ConfigMap volume
+              mountPath: /docker-entrypoint-initdb.d/ # Crucial path for MariaDB init scripts
+              readOnly: true
+          
+  volumeClaimTemplates: # handles persistent storage for the database
+    - metadata:
+        name: db-data # corresponds to the volumeMounts name for persistent data
+      spec:
+        accessModes:
+          - ReadWriteOnce 
+        storageClassName: "balanced-csi"
+        resources:
+          requests:
+            storage: 10Gi 
