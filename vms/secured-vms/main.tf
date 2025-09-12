@@ -127,6 +127,7 @@ resource "google_compute_instance" "bastion" {
     # Assign a public IP for external access
     access_config {}
   }
+}
 
 # 4.2. Webserver VM with No External IP
 resource "google_compute_instance" "webserver" {
