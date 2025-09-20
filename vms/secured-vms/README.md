@@ -103,3 +103,12 @@ http {
         include /etc/nginx/default.d/*.conf;
     }
 ```
+
+SSL installation
+```
+sudo yum install epel-release
+sudo yum install certbot python3-certbot-nginx
+sudo certbot --nginx -d example.com -d www.example.com
+```
+>If you encounter a problem where the webpage is not rendering the products page from the DB,
+>run `sudo setsebool -P httpd_can_network_connect 1` read more about SELinux
