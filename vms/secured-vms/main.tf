@@ -190,3 +190,44 @@ resource "google_compute_instance" "proxy" {
   }
 }
 
+# 5. Create Cloud Router for NAT
+resource "google_compute_router" "router" {
+  name    = "nat-router"
+  region  = var.gcp_region
+  network = google_compute_network.custom_vpc_network.id
+}
+
+# 6. Create Cloud NAT
+resource "google_compute_router_nat" "nat_gateway" {
+  name                               = "secured-ecom-nat"
+  router                             = google_compute_router.router.name
+  region                             = google_compute_router.router.region
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  # log_config block is removed to turn off logging
+}
+
+# Create a public managed zone for example.com
+resource "google_dns_managed_zone" "primary" {
+  name        = "ecom-dns"
+  dns_name    = "example.com."
+  description = "Managed by Terraform"
+}
+
+# Create an A record for the root domain (example.top)
+resource "google_dns_record_set" "root_a_record" {
+  name         = "${google_dns_managed_zone.primary.dns_name}"
+  managed_zone = google_dns_managed_zone.primary.name
+  type         = "A"
+  ttl          = 300
+  rrdatas      = ["Proxy External IP"]
+}
+
+# Create a CNAME record for the www subdomain (www.example.com)
+resource "google_dns_record_set" "www_cname_record" {
+  name         = "www.${google_dns_managed_zone.primary.dns_name}"
+  managed_zone = google_dns_managed_zone.primary.name
+  type         = "CNAME"
+  ttl          = 300
+  rrdatas      = ["${google_dns_managed_zone.primary.dns_name}"]
+}
