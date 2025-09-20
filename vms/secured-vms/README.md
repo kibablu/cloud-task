@@ -1,3 +1,5 @@
+<img src="images/dig-1.png" alt="architecture diagram" width="500"/>
+
 ### Instructions on installing SSL cert on nginx
 nginx runs on a proxy server and you will install and configure SSL cert
 
