@@ -62,6 +62,6 @@ Contribute: If you have a project idea or an improvement, create a new directory
 
 📄 _License_
 
-This repository is licensed under the MIT License. See the LICENSE file for more details.
+This repository is licensed under the GPL License. See the LICENSE file for more details.
 
 Happy Deploying!
