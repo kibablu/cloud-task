@@ -1,3 +1,5 @@
+[![Run in Google Cloud Shell](https://gstatic.com/cloud-devrel/cloudshell/images/cloudshell-button.svg)](https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/kibablu/cloud-task.git)
+
 ## DevOps & Cloud Projects Repository
 Welcome to the DevOps & Cloud Projects repository! This is a dedicated space for hands-on projects, labs, and examples that explore the world of DevOps and Cloud Computing.
 
