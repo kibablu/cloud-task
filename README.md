@@ -1,4 +1,4 @@
-[![Run in Google Cloud Shell](https://gstatic.com/cloud-devrel/cloudshell/images/cloudshell-button.svg)](https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/kibablu/cloud-task.git)
+[![Open in Cloud Shell](https://gstatic.com/cloud-devrel/cloudshell/images/cloudshell-button.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/kibablu/cloud-task.git)
 
 # ☁️ DevOps & Cloud Projects Repository
 
