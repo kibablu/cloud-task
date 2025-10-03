@@ -151,20 +151,6 @@ sudo systemctl reload nginx
 
 ---
 
-## ⚠️ Troubleshooting
-
-### SELinux Permission Errors
-
-If your web application isn’t rendering content (e.g., cannot fetch data from a database), SELinux may be blocking Nginx from making network connections.
-
-Grant Nginx the necessary permissions:
-```sh
-sudo setsebool -P httpd_can_network_connect 1
-```
-This command allows processes managed by Nginx (such as PHP-FPM or proxy connections) to make outgoing network connections.
-
----
-
 4. Test and Apply the Configuration
 Validate your new Nginx configuration and reload the service to apply the changes.
 
