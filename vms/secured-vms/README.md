@@ -1,52 +1,63 @@
-**Nginx Reverse Proxy with SSL/TLS using Certbot**
+# 🛡️ Nginx Reverse Proxy with SSL/TLS via Certbot
 
-This repository provides a comprehensive guide and configuration examples for setting up a secure Nginx reverse proxy. The guide details how to obtain and automatically renew a free SSL/TLS certificate from Let's Encrypt using Certbot and configure Nginx to securely serve your web application. The instructions are built around a common three-tier web architecture consisting of a dedicated proxy server, a web server, and a database server.
+This repository provides a comprehensive, production-ready guide and example configurations for deploying a secure Nginx reverse proxy with automatic SSL/TLS from Let’s Encrypt (Certbot).  
+The setup is ideal for a common three-tier web architecture, with a dedicated proxy server, internal web application server, and a database server.
 
-🏛️ **Architecture Overview**
+---
 
-The following diagram illustrates the high-level architecture. Nginx acts as a reverse proxy, handling all incoming public traffic and redirecting it securely to an internal application server.
+## 🏛️ Architecture Overview
+
+Nginx acts as a reverse proxy, handling all incoming public traffic and forwarding it securely to your internal application server.
 
 <img src="images/dig-1.png" alt="architecture diagram" width="500"/>
 
-📋 **Prerequisites**
+## 📋 Prerequisites
 
 Before you begin, ensure you have:
 
-- A running Nginx server.
-- A registered domain name with DNS records pointing to your Nginx server's public IP address.
-- A running web application on an internal port.
+- A running Nginx server (CentOS/RHEL, Ubuntu, or similar).
+- A registered domain name with DNS A/AAAA records pointing to your Nginx server’s public IP.
+- An internal web application server (e.g., http://localhost:8080 or another private IP:port).
+- (Recommended) Root or sudo privileges on the server.
 
-⚙️ **Installation and Setup**
+---
 
-1. Install Certbot
-First, you need to install Certbot and its Nginx plugin. These packages are available through the `epel` (Extra Packages for Enterprise Linux) repository on CentOS/RHEL-based systems.
+## ⚙️ Installation & Setup
 
-```
+### 1. Install Certbot and the Nginx Plugin
+
+On CentOS/RHEL:
+```sh
 sudo yum install epel-release
 sudo yum install certbot python3-certbot-nginx
 ```
 
-2. Obtain an SSL/TLS Certificate
-Run Certbot to automatically obtain and install a certificate for your domain. This command will also modify your Nginx configuration to enable HTTPS.
-
-**Important**: Replace example.com with your actual domain name.
-
+On Ubuntu/Debian:
+```sh
+sudo apt update
+sudo apt install certbot python3-certbot-nginx
 ```
-sudo certbot --nginx -d example.com -d [www.example.com](https://www.example.com)
+
+---
+
+### 2. Obtain and Install a Let’s Encrypt SSL/TLS Certificate
+
+Replace `example.com` with your actual domain name:
+```sh
+sudo certbot --nginx -d example.com -d www.example.com
 ```
-_edit with your actual domain name you registered_
+Certbot will:
+- Automatically configure Nginx for HTTPS (port 443).
+- Fetch and install certificates.
+- Set up automatic renewal.
 
-Certbot will automatically configure Nginx to listen on port 443 (HTTPS) and serve your domain securely.
+---
 
-3. Configure Nginx as a Reverse Proxy
-After Certbot has run, you need to edit your Nginx server block to function as a reverse proxy.
+### 3. Configure Nginx as a Reverse Proxy
 
-Locate your server configuration file, typically found in `/etc/nginx/conf.d/` or `/etc/nginx/sites-enabled/`. Edit the `server` block for your domain.
+After running Certbot, adjust your Nginx server block (typically in `/etc/nginx/conf.d/` or `/etc/nginx/sites-enabled/`):
 
->Certbot modifies your NGINX configuration to listen on port 443 (HTTPS) and serve your domain securely. However, you'll need to manually adjust the configuration to act as a reverse proxy.
->The file is typically located in /etc/nginx/conf.d/ or /etc/nginx/sites-enabled/. Find the server block for your domain. It should look something like this after Certbot has run:
-
-```
+```nginx
 server {
     listen 443 ssl;
     server_name example.com www.example.com;
@@ -56,9 +67,9 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-    # The following block is what you need to add for the reverse proxy
+    # Reverse proxy configuration
     location / {
-        proxy_pass http://localhost:8080; # Replace with the actual address and port of your application
+        proxy_pass http://localhost:8080; # Replace with your application's IP:port
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -66,26 +77,22 @@ server {
     }
 }
 
-# Optional: Redirect HTTP to HTTPS
+# (Optional) Redirect HTTP to HTTPS
 server {
     listen 80;
     server_name example.com www.example.com;
     return 301 https://$host$request_uri;
 }
 ```
-The nginx config file
 
-```
-# For more information on configuration, see:
-#   * Official English Documentation: http://nginx.org/en/docs/
-#   * Official Russian Documentation: http://nginx.org/ru/docs/
+**Sample Nginx Config File**
 
+```nginx
 user nginx;
 worker_processes auto;
 error_log /var/log/nginx/error.log notice;
 pid /run/nginx.pid;
 
-# Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
 include /usr/share/nginx/modules/*.conf;
 
 events {
@@ -96,20 +103,13 @@ http {
     log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
-
     access_log  /var/log/nginx/access.log  main;
-
     sendfile            on;
     tcp_nopush          on;
     keepalive_timeout   65;
     types_hash_max_size 4096;
-
     include             /etc/nginx/mime.types;
     default_type        application/octet-stream;
-
-    # Load modular configuration files from the /etc/nginx/conf.d directory.
-    # See http://nginx.org/en/docs/ngx_core_module.html#include
-    # for more information.
     include /etc/nginx/conf.d/*.conf;
 
     server {
@@ -118,19 +118,52 @@ http {
         server_name  _;
         root         /usr/share/nginx/html;
 
-
         location / {
-            proxy_pass http://Internal IP webserver:80;
+            proxy_pass http://<INTERNAL_WEB_SERVER_IP>:80;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-        # Load configuration files for the default server block.
         include /etc/nginx/default.d/*.conf;
     }
+}
 ```
+> Replace `<INTERNAL_WEB_SERVER_IP>` with your internal app server’s address.
+
+---
+
+# Optional: Redirect HTTP to HTTPS
+```
+server {
+    listen 80;
+    server_name example.com www.example.com;
+    return 301 https://$host$request_uri;
+}
+```
+### 4. Test and Reload Nginx
+
+```sh
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+---
+
+## ⚠️ Troubleshooting
+
+### SELinux Permission Errors
+
+If your web application isn’t rendering content (e.g., cannot fetch data from a database), SELinux may be blocking Nginx from making network connections.
+
+Grant Nginx the necessary permissions:
+```sh
+sudo setsebool -P httpd_can_network_connect 1
+```
+This command allows processes managed by Nginx (such as PHP-FPM or proxy connections) to make outgoing network connections.
+
+---
 
 4. Test and Apply the Configuration
 Validate your new Nginx configuration and reload the service to apply the changes.
@@ -139,14 +172,40 @@ Validate your new Nginx configuration and reload the service to apply the change
 sudo nginx -t
 sudo systemctl reload nginx
 ```
-⚠️ **Troubleshooting**
+---
 
-***SELinux Permission Errors***
+## ⚠️ Troubleshooting
 
-If you encounter issues where your web application's content (e.g., product data from a database) is not rendering, it may be due to SELinux security policies preventing Nginx from accessing the network.
+### SELinux Permission Errors
 
-To resolve this, you can grant Nginx the necessary permissions by running the following command:
-```
+If your web application isn’t rendering content (e.g., cannot fetch data from a database), SELinux may be blocking Nginx from making network connections.
+
+Grant Nginx the necessary permissions:
+```sh
 sudo setsebool -P httpd_can_network_connect 1
 ```
-This command permanently enables the `httpd_can_network_connect` boolean, allowing processes managed by Nginx to make outgoing network connections. For more details on SELinux, consult the official documentation.
+This command allows processes managed by Nginx (such as PHP-FPM or proxy connections) to make outgoing network connections.
+
+---
+
+## 🔒 Security Tips
+
+- Certbot will auto-renew your certificates. To test renewal:
+  ```sh
+  sudo certbot renew --dry-run
+  ```
+- Never expose your internal app server directly to the internet.
+- Regularly update Nginx and system packages.
+
+---
+
+## 📚 References & Further Reading
+
+- [Nginx Documentation](http://nginx.org/en/docs/)
+- [Let’s Encrypt / Certbot Docs](https://certbot.eff.org/)
+- [SELinux Booleans for Nginx](https://wiki.centos.org/HowTos/SELinux)
+- [Reverse Proxy Guide](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/)
+
+---
+
+**Securely serve your apps with Nginx, Certbot, and best practices!**
