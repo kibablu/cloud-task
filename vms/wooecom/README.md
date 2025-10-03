@@ -85,6 +85,9 @@ It leverages Google Cloud SQL, Secret Manager, Cloud SQL Auth Proxy, and SELinux
 - [Google Cloud SQL Auth Proxy](https://cloud.google.com/sql/docs/mysql/connect-auth-proxy)
 - [WordPress on Compute Engine](https://cloud.google.com/compute/docs/tutorials/wordpress-deployment-manager)
 - [Google Secret Manager](https://cloud.google.com/secret-manager)
+- [Configure Private Services Access with Terraform](https://cloud.google.com/vpc/docs/configure-private-services-access#terraform)
+- [Removing a Private Services Access Connection](https://cloud.google.com/vpc/docs/configure-private-services-access#removing-connection)
+- [Cloud SQL Connectivity via GCE and Private IP (Codelab)](https://codelabs.developers.google.com/codelabs/cloud-sql-connectivity-gce-private#3)
 
 ---
 
