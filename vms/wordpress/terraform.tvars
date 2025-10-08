@@ -1,0 +1,7 @@
+# this should not be here but I have added it for beginner to know
+# that this is the secured way to put variables into terraform
+
+wordpress_db_user     = "change_to_your_user"
+wordpress_db_password = "your_secret_password"
+bucket_name = "your_bucket_name"
+sql_instance_name = "your_sql_name"
