@@ -91,6 +91,15 @@ terraform output lb_static_ip
 
 ---
 
+## 📚 Additional Resources & References
+
+-   [Configuring Private Services Access](https://cloud.google.com/vpc/docs/configure-private-services-access#removing-connection)
+-   [Using Google-managed SSL certificates with Terraform](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#terraform_1)
+-   [Enabling IAP for GCE & GKE](https://cloud.google.com/iap/docs/load-balancer-howto#enable-iap)
+-   [CodeLab: Connect to Cloud SQL from GCE (Private IP)](https://codelabs.developers.google.com/codelabs/cloud-sql-connectivity-gce-private#3)
+
+---
+
 ## 🗑️ Cleanup and Destruction
 
 To safely tear down all components created by this project:
