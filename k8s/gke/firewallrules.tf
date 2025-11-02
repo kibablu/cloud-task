@@ -1,4 +1,3 @@
-
 # Firewall rule to allow internal traffic within the VPC
 resource "google_compute_firewall" "allow_internal" {
   name          = "allow-internal-gke-vpc"
