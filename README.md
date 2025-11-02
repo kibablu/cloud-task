@@ -5,7 +5,6 @@
   <a href="https://www.terraform.io/">
     <img src="https://img.shields.io/badge/Terraform-7B42BC.svg?style=for-the-badge&logo=Terraform&logoColor=white" alt="Terraform">
   </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://prometheus.io/">
     <img src="https://img.shields.io/badge/Prometheus-E6522C.svg?style=for-the-badge&logo=Prometheus&logoColor=white" alt="Prometheus">
   </a>
