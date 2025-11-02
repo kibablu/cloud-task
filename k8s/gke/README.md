@@ -67,6 +67,7 @@ The Terraform configuration will create the following resources:
 2. Google Cloud SDK (`gcloud`) installed and configured.
 3. A GCP project with the necessary APIs enabled (Terraform will handle enabling them).
 4. Authenticated to GCP with appropriate permissions to create the resources.
+   
    ```bash
    gcloud auth application-default login
    ```
@@ -74,26 +75,31 @@ The Terraform configuration will create the following resources:
 ### Configuration
 1. **Clone the repository.**
 2. **Update Project ID**: Modify the `default` value for the `gcp_project_id` variable in `vars.tf` to your own GCP Project ID.
+   
    ```terraform
-   # /home/kibablu16/gke/vars.tf
    variable "gcp_project_id" {
      description = "The ID of the GCP project where resources will be created"
      type        = string
      default     = "your-gcp-project-id" # <-- CHANGE THIS
    }
    ```
-3. **(Optional)** Create a `terraform.tfvars` file to override other variables without modifying the `vars.tf` file.
+4. **(Optional)** Create a `terraform.tfvars` file to override other variables without modifying the `vars.tf` file.
 
 ### Deployment
 1. **Initialize Terraform**:
+   
    ```bash
    terraform init
    ```
-2. **Plan the deployment**:
+   
+3. **Plan the deployment**:
+   
    ```bash
    terraform plan
    ```
-3. **Apply the configuration**:
+   
+5. **Apply the configuration**:
+   
    ```bash
    terraform apply
    ```
