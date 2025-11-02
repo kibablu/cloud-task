@@ -1,8 +1,7 @@
 <p align="center">
   <a href="https://www.terraform.io/">
     <img src="https://img.shields.io/badge/Terraform-7B42BC.svg?style=for-the-badge&logo=Terraform&logoColor=white" alt="Terraform">
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
+ 
   <!-- TODO: Update the git_repo URL to point to your repository -->
   <a href="https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/kibablu/cloud-task/tree/main/k8s/gke/README.md">
     <img src="https://gstatic.com/cloudssh/images/open-btn.svg" alt="Open in Cloud Shell">
