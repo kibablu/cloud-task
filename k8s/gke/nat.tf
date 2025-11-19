@@ -15,7 +15,7 @@ resource "google_compute_router_nat" "medic_cloud_nat" {
 
   # Map subnets to NAT
   dynamic "subnetwork" {
-    for_each = google_compute_subnetwork.subnets
+    for_each = merge(google_compute_subnetwork.subnets, { "argocd" = google_compute_subnetwork.argocd_subnet })
     content {
       name                    = subnetwork.value.self_link
       source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
