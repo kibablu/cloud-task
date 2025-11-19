@@ -1,5 +1,5 @@
 # ------------------------------------------------
-# 1. ArgoCD GKE Cluster
+# ArgoCD GKE Cluster
 # ------------------------------------------------
 resource "google_container_cluster" "argocd_cluster" {
   name     = "gke-argocd-cluster"
@@ -72,7 +72,7 @@ resource "google_container_cluster" "argocd_cluster" {
 }
 
 # ------------------------------------------------
-# 2. Helm Release for ArgoCD
+# Helm Release for ArgoCD
 # ------------------------------------------------
 resource "helm_release" "argocd" {
   provider = helm.argocd_gke

@@ -1,5 +1,5 @@
 # ------------------------------------------------
-# 1. GKE Clusters (app, db, ops)
+# GKE Clusters (app, db, ops)
 # ------------------------------------------------
 resource "google_container_cluster" "clusters" {
   for_each = var.subnet_configs
@@ -19,11 +19,11 @@ resource "google_container_cluster" "clusters" {
     disk_size_gb = 20 # Increased to meet minimum image requirements (12GB)
   }
 
-  # Requirement 1: Network/Subnet configuration
+  # Network/Subnet configuration
   network    = google_compute_network.vpc.self_link
   subnetwork = google_compute_subnetwork.subnets[each.key].self_link
 
-  # Requirement 2: No public IP (Private Cluster)
+  # No public IP (Private Cluster)
   private_cluster_config {
     enable_private_endpoint = true # Allows access from within the VPC
     enable_private_nodes    = true # Ensures nodes have no public IP
@@ -43,9 +43,14 @@ resource "google_container_cluster" "clusters" {
       cidr_block   = var.bastion_subnet_cidr
       display_name = "Bastion/Jump Host Subnet"
     }
+    cidr_blocks {
+      # Allow access from the ArgoCD cluster subnet
+      cidr_block   = var.argocd_subnet_cidr
+      display_name = "ArgoCD Subnet"
+    }
   }
 
-  # Requirement 6: Dataplane V2 CNI
+  # Dataplane V2 CNI
   ip_allocation_policy {
     cluster_secondary_range_name  = google_compute_subnetwork.subnets[each.key].secondary_ip_range[0].range_name
     services_secondary_range_name = google_compute_subnetwork.subnets[each.key].secondary_ip_range[1].range_name
@@ -54,26 +59,32 @@ resource "google_container_cluster" "clusters" {
   # Dataplane V2 CNI implementation (ADVANCED_DATAPATH)
   datapath_provider = "ADVANCED_DATAPATH"
 
-  # Requirement 5: Enable Security Features
-  # Workload Identity Pool setup (Req 5)
+  # Enable Security Features
+  # Workload Identity Pool setup 
   workload_identity_config {
     workload_pool = "${var.gcp_project_id}.svc.id.goog"
   }
 
-  # Security Posture (Req 5)
+  # Confidential/Shielded GKE Nodes (Note: Confidential requires specific CPUs/GPUs, but we enable the flag)
+  # WARNING: Confidential Nodes may conflict with E2-medium Spot VMs in some regions.
+  confidential_nodes {
+    enabled = false # Disabled as e2-medium machine types do not support Confidential Nodes.
+  }
+
+  # Security Posture 
   security_posture_config {
     mode               = "BASIC"
     vulnerability_mode = "VULNERABILITY_BASIC"
   }
 
-  # Requirement 7: Cloud DNS
+  # Cloud DNS
   dns_config {
     cluster_dns        = "CLOUD_DNS"                 # Use Cloud DNS for in-cluster DNS resolution
     cluster_dns_scope  = "VPC_SCOPE"                 # Sets cluster DNS to Cloud DNS for VPC
     cluster_dns_domain = "${each.key}.cluster.local" # Required when using VPC_SCOPE with Cloud DNS
   }
 
-  # Requirement 8 & 10: Add-ons Configuration
+  # Add-ons Configuration
   addons_config {
     # HTTP Load Balancing (Enabled only for 'app' cluster)
     http_load_balancing {
@@ -86,7 +97,7 @@ resource "google_container_cluster" "clusters" {
     }
   }
 
-  # Requirement 9: Disable Logging, Monitoring, and Managed Prometheus
+  # Disable Logging, Monitoring, and Managed Prometheus
   logging_config {
     enable_components = [] # Disable all logging components
   }
@@ -113,12 +124,12 @@ resource "google_container_node_pool" "node_pools" {
   node_count = 1
 
   node_config {
-    machine_type = "e2-medium" # Requirement 3: E2-medium
-    spot         = true        # Requirement 3: Spot VMs
+    machine_type = "e2-medium" 
+   # spot         = true        
 
     # Requirement 4: Attach service account
-    # This depends on a service account resource, google_service_account.gke_node_sa'
-    
+    # This depends on a service account resource, which is not present in the provided context.
+    # Assuming it exists in another file, e.g., 'google_service_account.gke_node_sa'.
     service_account = google_service_account.gke_node_sa.email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",

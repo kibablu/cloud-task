@@ -1,5 +1,5 @@
 # ------------------------------------------------
-# 1. IAM Service Account for GKE Nodes & Permissions
+# IAM Service Account for GKE Nodes & Permissions
 # ------------------------------------------------
 resource "google_service_account" "gke_node_sa" {
   account_id   = "gke-node-sa"
