@@ -1,7 +1,7 @@
 variable "gcp_project_id" {
   description = "The ID of the GCP project where resources will be created"
   type        = string
-  default     = "PROJECT-ID" # CHANGE THIS TO YOUR PROJECT ID
+  default     = "PROJECT_ID" # !!! CHANGE THIS !!!
 }
 
 variable "gcp_region" {
@@ -58,4 +58,22 @@ variable "bastion_subnet_cidr" {
   description = "The CIDR range for the bastion/management subnet"
   type        = string
   default     = "10.0.1.0/28"
+}
+
+variable "argocd_subnet_cidr" {
+  description = "The CIDR range for the ArgoCD Autopilot GKE cluster subnet"
+  type        = string
+  default     = "10.0.40.0/24"
+}
+
+variable "argocd_pods_secondary_range" {
+  description = "The secondary CIDR range for the ArgoCD cluster Pods"
+  type        = string
+  default     = "10.13.0.0/18"
+}
+
+variable "argocd_services_secondary_range" {
+  description = "The secondary CIDR range for the ArgoCD cluster Services"
+  type        = string
+  default     = "10.23.0.0/20"
 }

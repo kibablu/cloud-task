@@ -1,5 +1,5 @@
 # ------------------------------------------------
-# 1. Bastion/Jump Host VM for Cluster Access
+# Bastion/Jump Host VM for Cluster Access
 # ------------------------------------------------
 
 # Bastion host VM instance
