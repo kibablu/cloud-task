@@ -6,8 +6,6 @@ Overview
 
 This folder contains GitOps manifests and Terraform code used to provision and configure a GKE cluster and deploy applications via Argo CD and Helm.
 
-Important: steps 2 and 3 are intentionally omitted because they are managed by Terraform inside gke.tf. Do not run separate provisioning steps that duplicate what gke.tf already performs.
-
 Quickstart
 
 1) Provision infrastructure (Terraform)
