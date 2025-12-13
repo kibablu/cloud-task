@@ -32,7 +32,7 @@ Quickstart
 
 Notes
 
-- Terraform (gke.tf) is the source of truth for cluster provisioning in this repo — it handles APIs, service accounts, and cluster creation. That is why steps previously labeled "2" and "3" were removed from this README.
+- Terraform (gke.tf) is the source of truth for cluster provisioning in this repo — it handles APIs, service accounts, and cluster creation. 
 - Use Argo CD to manage application deployment via GitOps once the cluster and control-plane components are available.
 
 Repository layout (relevant files/directories)
@@ -48,6 +48,3 @@ Troubleshooting
 - If Terraform applies fail, check GCP project/credentials and enable required APIs.
 - Use kubectl get pods -A to inspect workloads once the cluster is up.
 
-Contact
-
-If you want me to also add or tweak specific install instructions (or add screenshots/badges for other tools), tell me what you'd like changed.
