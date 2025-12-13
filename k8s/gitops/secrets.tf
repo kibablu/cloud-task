@@ -8,7 +8,7 @@ resource "random_password" "db_password" {
 
 # 2. Create the Secret
 resource "google_secret_manager_secret" "postgres_creds" {
-  secret_id = "postgres-chris-creds"
+  secret_id = "SECRET_ID"
   labels = {
     env = "dev"
   }
