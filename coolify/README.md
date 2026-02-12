@@ -3,6 +3,10 @@
 
 # ERPNext + Coolify: Deployment Magic on Google Cloud
 
+[![Read Article](https://img.shields.io/badge/Read-Full_Article-blue?style=for-the-badge&logo=medium)](https://bablu.hashnode.dev/erpnext-coolify-deployment-magic-on-google-cloud)
+
+# ERPNext + Coolify: Deployment Magic on Google Cloud
+
 This project demonstrates a production-ready deployment of ERPNext v15 on Google Compute Engine using Coolify as a self-hosted PaaS. By leveraging Docker containerization and automated proxy management, we've created a scalable and easily maintainable ERP environment.
 
 ## 🚀 Overview
@@ -79,6 +83,8 @@ bench use erpnext.klaudmazoezi.top
 ```
 
 ## ⚠️ Troubleshooting & Lessons Learned
+
+> Stuck on a 1045 OperationalError? [See my step-by-step fix in the article](https://bablu.hashnode.dev/erpnext-coolify-deployment-magic-on-google-cloud).
 
 **Nginx "Service Unavailable" / 404**
 
