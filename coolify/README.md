@@ -1,3 +1,6 @@
+
+<img width="1103" height="658" alt="erp" src="https://github.com/user-attachments/assets/aaaf3203-b943-4047-850c-b85646355b7b" />
+
 # ERPNext + Coolify: Deployment Magic on Google Cloud
 
 This project demonstrates a production-ready deployment of ERPNext v15 on Google Compute Engine using Coolify as a self-hosted PaaS. By leveraging Docker containerization and automated proxy management, we've created a scalable and easily maintainable ERP environment.
