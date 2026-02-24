@@ -1,3 +1,6 @@
+
+![otel](https://github.com/user-attachments/assets/580866b1-1a13-4619-8f79-fe43359cc4da)
+
 # Provision a GKE Cluster for the OpenTelemetry Demo with Custom DNS
 
 This Terraform project provisions a Google Kubernetes Engine (GKE) cluster on Google Cloud Platform (GCP), complete with the necessary networking, firewall rules, and DNS configuration to run the OpenTelemetry (OTel) Demo.
