@@ -1,0 +1,40 @@
+# --- OpenTelemetry Demo GKE Configuration ---
+components:
+  # 1. Fix the Frontend Proxy (Routing & Health Checks)
+  frontend-proxy:
+    service:
+      type: NodePort
+      annotations:
+        # Links to the BackendConfig for health checks
+        cloud.google.com/backend-config: '{"default": "otel-frontend-config"}'
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "gce"
+        kubernetes.io/ingress.global-static-ip-name: "chris-ingress-global"
+        networking.gke.io/managed-certificates: "otel-demo-cert"
+      hosts:
+        - host: "example.com" # your domain
+          paths:
+            - path: /* # Catch-all for /grafana, /jaeger, /loadgen, etc.
+              pathType: ImplementationSpecific
+              port: 8080
+
+  # 2. Fix the Frontend (Product Display & Browser Traces)
+  frontend:
+    envOverrides:
+      # This tells the browser to send spans to your public domain instead of localhost
+      - name: PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+        value: "https://example.com/otlp-http/v1/traces"
+
+# --- Optional: If you want to use Google Cloud Trace/Logging ---
+# (Requires the oauth_scopes we added to gke.tf)
+opentelemetry-collector:
+  config:
+    exporters:
+      googlecloud:
+        project: "project_id" # Replace with your GCP Project ID
+    service:
+      pipelines:
+        traces:
+          exporters: [spanmetrics, googlecloud]
