@@ -1,19 +1,21 @@
 
 ![otel](https://github.com/user-attachments/assets/580866b1-1a13-4619-8f79-fe43359cc4da)
 
-# Provision a GKE Cluster for the OpenTelemetry Demo with Custom DNS
+# 🌌 OpenTelemetry Demo on GKE with Custom Domain
+This project automates the deployment of a public GKE cluster, reserves a static global IP, configures Cloud DNS, and deploys the OpenTelemetry (OTel) Demo via Helm. It is configured to serve the demo over HTTPS via a Google-managed SSL certificate.
 
-This Terraform project provisions a Google Kubernetes Engine (GKE) cluster on Google Cloud Platform (GCP), complete with the necessary networking, firewall rules, and DNS configuration to run the OpenTelemetry (OTel) Demo.
+## 🏗 Infrastructure (Terraform)
+The infrastructure consists of:
 
-It sets up a custom domain with a public DNS zone and a managed SSL certificate, allowing you to access the OTel demo via a secure, public-facing URL instead of `localhost`.
+- **VPC & Subnets**: Custom network for GKE.
 
-## Features
+- **GKE Cluster**: A public cluster using e2-standard-4 nodes to handle the OTel microservices.
 
-- **VPC Native GKE Cluster**: Creates a GKE cluster within a custom Virtual Private Cloud (VPC).
-- **Separate Subnets**: Uses distinct subnets for the GKE cluster and other VMs (like a bastion host).
-- **Custom DNS Configuration**: Sets up a Cloud DNS managed zone and an 'A' record for your custom domain.
-- **Managed SSL**: Provisions a Google-managed SSL certificate for your domain to enable HTTPS.
-- **Bastion Host Ready**: Includes firewall rules and a service account for a bastion host to securely access the cluster.
+- **Global Static IP**: Reserved for the External HTTP(S) Load Balancer.
+
+- **Managed SSL Certificate**: Provisioned by Google for your custom domain (klaudmazoezi.top).
+
+- **Cloud DNS**: Managed zone and A-record pointing to the static IP.
 
 ## Prerequisites
 
@@ -70,7 +72,6 @@ Follow these steps to provision the infrastructure:
     ```sh
     terraform apply
     ```
-
 ## Post-Deployment Steps
 
 ### 1. Update Your Domain's Name Servers
@@ -89,13 +90,92 @@ name_servers = [
 ]
 ```
 
-### 2. Install the OpenTelemetry Demo
+## ☸️ Kubernetes Setup
+Once the infrastructure is ready, you must configure GKE to handle the Load Balancer health checks and routing.
 
-With the infrastructure ready, you can now deploy the OpenTelemetry Demo to your GKE cluster. You will need to configure an Ingress resource to use the static IP and managed certificate created by Terraform.
+### 1. Create the BackendConfig
+GKE Ingress requires a BackendConfig to accurately monitor the health of the frontend-proxy.
 
-Refer to the official OpenTelemetry Demo documentation for instructions on deploying to Kubernetes. When configuring your Ingress, ensure it references the static IP and the Google-managed SSL certificate.
+```yaml
+# backend-config.yaml
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: otel-frontend-config
+spec:
+  healthCheck:
+    type: HTTP
+    port: 8080
+    requestPath: /
+```
+Apply it: `kubectl apply -f backend-config.yaml`
 
-## Cleanup
+## 🚀 OpenTelemetry Demo Deployment
+We use the official OpenTelemetry Helm chart with a custom values.yaml to integrate with GCE Ingress.
+
+### 1. The `values.yaml` Configuration
+The configuration ensures that:
+
+- The Ingress uses the reserved IP and SSL certificate.
+
+- A wildcard path (`/*`) is used so Google Cloud Load Balancer routes all sub-tools (Grafana, Jaeger) to the Envoy proxy.
+
+- The frontend is aware of the public domain for browser-side tracing
+
+```yaml
+components:
+  frontend-proxy:
+    service:
+      type: NodePort
+      annotations:
+        cloud.google.com/backend-config: '{"default": "otel-frontend-config"}'
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "gce"
+        kubernetes.io/ingress.global-static-ip-name: "chris-ingress-global"
+        networking.gke.io/managed-certificates: "chris-otel-demo-cert"
+      hosts:
+        - host: "example.com"
+          paths:
+            - path: /*
+              pathType: ImplementationSpecific
+              port: 8080
+  frontend:
+    envOverrides:
+      - name: PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+        value: "https://example.com/otlp-http/v1/traces"
+```
+
+### 2. Helm Installation
+```sh
+helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+helm repo update
+helm install otel-demo open-telemetry/opentelemetry-demo -f values.yaml
+```
+## 🔗 Accessing the Demo
+After deployment, the Google Cloud Load Balancer and SSL certificate can take 10–20 minutes to fully provision.
+
+|Service | URL
+|--------| ------
+|Astronomy Shop|https://example.com/
+|Grafana|https://example.com/grafana/
+|Jaeger UI|https://example.com/jaeger/ui/
+|Feature Flags|https://example.com/feature/
+|Load Gen UI|https://example.com/loadgen/
+
+## 🛠 Troubleshooting
+- `404` Backend NotFound: This usually means the Google Load Balancer is still provisioning or the health check on port 8080 is failing. Check status with:
+    ```sh
+     kubectl describe ingress otel-demo-frontendproxy
+    ```
+- SSL Handshake Failed: Ensure the DNS A-record matches your reserved IP. Check certificate status:
+    ```sh
+    kubectl get managedcertificate chris-otel-demo-cert
+    ```
+- Products Not Loading: Check the browser console (`F12`). If you see connection errors to `localhost`, ensure the `PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` in `values.yaml` is set to your real domain.
+
+## 🗑️ Cleanup
 
 To avoid incurring ongoing charges, destroy the resources when you are finished:
 
