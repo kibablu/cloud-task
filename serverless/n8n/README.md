@@ -60,7 +60,7 @@ Ensure you have authenticated with GCP using `gcloud auth application-default lo
 
 1. **DNS Delegation:** Check the `dns_name_servers` output and update your domain registrar (GoDaddy, Namecheap, etc.) to point to Google Cloud DNS.
 2. **IAP Access:** Ensure your Google Account has the "IAP-secured Web App User" role to bypass the Zero-Trust screen and access the n8n editor.
-3. **Connecting to Internal VM:** Use the `vm_ssh_command` output to securely SSH into your internal AI/MCP VM via IAP tunneling without exposing it to the public internet.
+3. **Connecting to Internal VM:** Use the `vm_ssh_command` output to securely SSH into your VM via IAP tunneling without exposing it to the public internet.
 
 ---
 
