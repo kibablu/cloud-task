@@ -1,3 +1,5 @@
+![wikipedia](https://github.com/user-attachments/assets/ec5095db-840f-45df-98f1-608c8e2fe63d)
+
 # n8n Serverless Infrastructure on Google Cloud
 
 ![n8n](https://img.shields.io/badge/n8n-FF6D5A?style=for-the-badge&logo=n8n&logoColor=white)
