@@ -1,4 +1,3 @@
-# --- GKE Cluster ---
 resource "google_container_cluster" "chris_gke_cluster" {
   name       = "chris-gke-public"
   location   = var.zone
@@ -24,7 +23,7 @@ resource "google_container_cluster" "chris_gke_cluster" {
   }
 }
 
-# --- Custom Node Pool ---
+# Custom Node Pool
 resource "google_container_node_pool" "primary_nodes" {
   name       = "primary-node-pool"
   location   = var.zone
