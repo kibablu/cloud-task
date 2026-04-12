@@ -6,7 +6,7 @@ resource "google_compute_network" "custom_vpc_network" {
 
 resource "google_compute_subnetwork" "custom_subnet" {
   name          = "secured-ecom-subnet"
-  ip_cidr_range = "10.0.1.0/27" # /27 CIDR range
+  ip_cidr_range = "10.0.1.0/27" 
   region        = var.gcp_region
   network       = google_compute_network.custom_vpc_network.id
   description   = "Subnet for the VMs with a /27 CIDR"
