@@ -1,4 +1,3 @@
-## Project and Location Variables
 variable "project_id" {
   description = "The GCP project ID to deploy resources into"
   type        = string
@@ -17,7 +16,6 @@ variable "zone" {
   default     = "us-central1-a"
 }
 
-## Domain Variables
 variable "domain_name" {
   description = "The public domain name for your Cloud DNS zone (e.g., chrisproject.org)"
   type        = string
