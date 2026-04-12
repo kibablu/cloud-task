@@ -10,10 +10,9 @@ resource "google_container_cluster" "clusters" {
 
   node_config {
     disk_type    = "pd-balanced"
-    disk_size_gb = 20 # Increased to meet minimum image requirements (12GB)
+    disk_size_gb = 20 
   }
 
-  # Network/Subnet configuration
   network    = google_compute_network.vpc.self_link
   subnetwork = google_compute_subnetwork.subnets[each.key].self_link
 
