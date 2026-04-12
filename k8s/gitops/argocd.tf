@@ -1,7 +1,4 @@
-
-# --- ArgoCD Helm Release ---
 resource "helm_release" "argocd" {
-  # Tell this resource to use the aliased providers configured in provider.tf
   provider = helm.chris_gke
 
   name             = "argocd"
