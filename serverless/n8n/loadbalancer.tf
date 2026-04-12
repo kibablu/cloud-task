@@ -1,4 +1,3 @@
-# Reserve a Global Static IP
 resource "google_compute_global_address" "n8n_ip" {
   name = "n8n-static-ip"
   depends_on = [data.google_project.project]
