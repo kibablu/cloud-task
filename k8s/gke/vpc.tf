@@ -1,9 +1,6 @@
-# ------------------------------------------------
-# Network Setup (VPC, Subnets, and NAT)
-# ------------------------------------------------
 resource "google_compute_network" "vpc" {
   name                    = "${var.gcp_project_id}-gke-vpc"
-  auto_create_subnetworks = false # Custom subnets for better control
+  auto_create_subnetworks = false 
   routing_mode            = "REGIONAL"
   depends_on              = [google_project_service.gcp_apis]
 }
@@ -27,9 +24,6 @@ resource "google_compute_subnetwork" "subnets" {
   }
 }
 
-# ------------------------------------------------
-# Subnet for the Bastion/Jump Host VM
-# ------------------------------------------------
 resource "google_compute_subnetwork" "bastion_subnet" {
   name          = "bastion-subnet"
   ip_cidr_range = var.bastion_subnet_cidr
@@ -37,9 +31,6 @@ resource "google_compute_subnetwork" "bastion_subnet" {
   network       = google_compute_network.vpc.self_link
 }
 
-# ------------------------------------------------
-# Subnet for the ArgoCD Autopilot GKE Cluster
-# ------------------------------------------------
 resource "google_compute_subnetwork" "argocd_subnet" {
   name          = "argocd-subnet"
   ip_cidr_range = var.argocd_subnet_cidr
@@ -55,9 +46,7 @@ resource "google_compute_subnetwork" "argocd_subnet" {
     ip_cidr_range = var.argocd_services_secondary_range
   }
 }
-# ------------------------------------------------
-# Reserve Static Public IP for the App Load Balancer
-# ------------------------------------------------
+
 resource "google_compute_address" "app_external_ip" {
   name         = "${var.gcp_project_id}-app-external-ip"
   address_type = "EXTERNAL"
