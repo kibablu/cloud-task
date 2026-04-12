@@ -43,10 +43,6 @@ resource "google_project_service" "gcp_apis" {
   disable_on_destroy = false
 }
 
-# ------------------------------------------------
-# Kubernetes & Helm Provider Configuration
-# ------------------------------------------------
-
 # Data source to fetch authentication details for the ArgoCD GKE cluster
 data "google_container_cluster" "chris_gke_private_auth" {
   name     = google_container_cluster.chris_gke_cluster.name
