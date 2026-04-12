@@ -1,4 +1,3 @@
-# --- Postgres Credentials in Secret Manager ---
 # Generate a random password 
 resource "random_password" "db_password" {
   length           = 16
