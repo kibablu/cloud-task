@@ -1,7 +1,3 @@
-# -----------------------------------------------------------------------------
-# Outputs
-# -----------------------------------------------------------------------------
-
 output "wordpress_vm_public_ip" {
   description = "The public IP address of the WordPress VM. Access this URL to complete the WordPress setup."
   value       = google_compute_instance.wordpress_vm.network_interface[0].access_config[0].nat_ip
