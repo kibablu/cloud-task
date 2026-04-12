@@ -1,4 +1,4 @@
-# Replace YOUR_BUCKET_NAME with a real GCS bucket name you've created.
+# Replace YOUR_BUCKET_NAME 
 terraform {
   required_version = ">= 1.5.0"
 
