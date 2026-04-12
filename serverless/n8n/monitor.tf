@@ -1,4 +1,3 @@
-# Create a Notification Channel (Your Email)
 resource "google_monitoring_notification_channel" "email_admin" {
   display_name = "Email Admin for n8n Alerts"
   type         = "email"
@@ -14,7 +13,6 @@ resource "google_monitoring_alert_policy" "sql_memory_alert" {
   conditions {
     display_name = "Memory Utilization > 90%"
     condition_threshold {
-      # Fixed resource type to cloudsql_database
       filter     = "resource.type = \"cloudsql_database\" AND metric.type = \"cloudsql.googleapis.com/database/memory/utilization\" AND resource.labels.database_id = \"${var.project_id}:${google_sql_database_instance.n8n_db.name}\""
       duration   = "300s"
       comparison = "COMPARISON_GT"
