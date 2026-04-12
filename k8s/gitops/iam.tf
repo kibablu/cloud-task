@@ -17,8 +17,7 @@ resource "google_service_account_iam_member" "workload_identity_binding" {
   service_account_id = google_service_account.gke_workload_sa.name
   role               = "roles/iam.workloadIdentityUser"
 
-  # member format: "serviceAccount:PROJECT_ID.svc.id.goog[K8S_NAMESPACE/K8S_SA_NAME]"
-  # We assume you will create a K8s SA named 'chris-sa' in namespace 'chris'
+  # Create a K8s SA named 'chris-sa' in namespace 'chris'
   member = "serviceAccount:${var.project_id}.svc.id.goog[chris/chris-sa]"
 }
 
