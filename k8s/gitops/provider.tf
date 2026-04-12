@@ -1,4 +1,3 @@
-# --- Terraform Backend (Highly Recommended for State Management) ---
 # Replace YOUR_BUCKET_NAME with a real GCS bucket name you've created.
 terraform {
   required_version = ">= 1.5.0"
@@ -28,10 +27,8 @@ provider "google" {
   region  = var.region
 }
 
-# Get current Google Cloud auth token
 data "google_client_config" "current" {}
 
-# Enable necessary Google Cloud APIs
 resource "google_project_service" "gcp_apis" {
   for_each = toset([
     "compute.googleapis.com",
