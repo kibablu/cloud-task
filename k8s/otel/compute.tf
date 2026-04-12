@@ -14,7 +14,6 @@ resource "google_compute_instance" "bastion_vm" {
     }
   }
 
-  # Network interface with ephemeral public IP
   network_interface {
     subnetwork = google_compute_subnetwork.vm_subnet.id
     # An empty access_config block assigns an ephemeral public IP
