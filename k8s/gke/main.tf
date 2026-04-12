@@ -1,19 +1,13 @@
-# ------------------------------------------------
-# GKE Clusters (app, db, ops)
-# ------------------------------------------------
 resource "google_container_cluster" "clusters" {
   for_each = var.subnet_configs
   name     = "gke-${each.key}-cluster"
   location = var.gcp_zone
 
-  # Basic configuration
   initial_node_count = 1
   release_channel { channel = var.gke_release_channel }
 
-  # Allow deletion of the cluster through Terraform. Defaults to true.
   deletion_protection = false
 
-  # Define the configuration for the initial, temporary node pool to avoid quota issues.
   node_config {
     disk_type    = "pd-balanced"
     disk_size_gb = 20 # Increased to meet minimum image requirements (12GB)
@@ -56,19 +50,15 @@ resource "google_container_cluster" "clusters" {
     services_secondary_range_name = google_compute_subnetwork.subnets[each.key].secondary_ip_range[1].range_name
   }
 
-  # Dataplane V2 CNI implementation (ADVANCED_DATAPATH)
+  # Dataplane V2 CNI 
   datapath_provider = "ADVANCED_DATAPATH"
 
-  # Enable Security Features
-  # Workload Identity Pool setup 
   workload_identity_config {
     workload_pool = "${var.gcp_project_id}.svc.id.goog"
   }
 
-  # Confidential/Shielded GKE Nodes (Note: Confidential requires specific CPUs/GPUs, but we enable the flag)
-  # WARNING: Confidential Nodes may conflict with E2-medium Spot VMs in some regions.
   confidential_nodes {
-    enabled = false # Disabled as e2-medium machine types do not support Confidential Nodes.
+    enabled = false 
   }
 
   # Security Posture 
@@ -79,9 +69,9 @@ resource "google_container_cluster" "clusters" {
 
   # Cloud DNS
   dns_config {
-    cluster_dns        = "CLOUD_DNS"                 # Use Cloud DNS for in-cluster DNS resolution
-    cluster_dns_scope  = "VPC_SCOPE"                 # Sets cluster DNS to Cloud DNS for VPC
-    cluster_dns_domain = "${each.key}.cluster.local" # Required when using VPC_SCOPE with Cloud DNS
+    cluster_dns        = "CLOUD_DNS"                
+    cluster_dns_scope  = "VPC_SCOPE"                 
+    cluster_dns_domain = "${each.key}.cluster.local" 
   }
 
   # Add-ons Configuration
@@ -91,7 +81,7 @@ resource "google_container_cluster" "clusters" {
       disabled = each.key != "app"
     }
 
-    # Compute Engine Persistent Disk CSI Driver (Req 10)
+    # Compute Engine Persistent Disk CSI Driver
     gce_persistent_disk_csi_driver_config {
       enabled = true
     }
@@ -99,23 +89,19 @@ resource "google_container_cluster" "clusters" {
 
   # Disable Logging, Monitoring, and Managed Prometheus
   logging_config {
-    enable_components = [] # Disable all logging components
+    enable_components = [] 
   }
 
   monitoring_config {
-    enable_components = [] # Disable all monitoring components
+    enable_components = [] 
     managed_prometheus {
       enabled = false
     }
   }
 
-  # Remove default node pool as we define a custom one below
   remove_default_node_pool = true
 }
 
-# ------------------------------------------------
-# Node Pool Definitions
-# ------------------------------------------------
 resource "google_container_node_pool" "node_pools" {
   for_each   = google_container_cluster.clusters
   cluster    = each.value.name
@@ -127,23 +113,18 @@ resource "google_container_node_pool" "node_pools" {
     machine_type = "e2-medium" 
    # spot         = true        
 
-    # Requirement 4: Attach service account
-    # This depends on a service account resource, which is not present in the provided context.
-    # Assuming it exists in another file, e.g., 'google_service_account.gke_node_sa'.
     service_account = google_service_account.gke_node_sa.email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
     ]
 
-    # Requirement 5: Shielded GKE Nodes (integrated with node config)
     shielded_instance_config {
       enable_integrity_monitoring = true
       enable_secure_boot          = true
     }
 
-    # Node boot disk configuration
-    disk_type    = "pd-balanced" # Use pd-balanced for all node boot disks to avoid SSD quota issues.
-    disk_size_gb = 30            # Set a consistent 10GB size for all boot disks.
+    disk_type    = "pd-balanced" 
+    disk_size_gb = 30            
   }
 
   management {
