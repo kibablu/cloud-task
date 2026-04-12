@@ -5,7 +5,7 @@ resource "google_compute_network" "chris_vpc" {
 
 resource "google_compute_subnetwork" "vm_subnet" {
   name          = "vm-subnet"
-  ip_cidr_range = "10.10.1.0/24" # **This range (10.10.1.0/24) will be authorized**
+  ip_cidr_range = "10.10.1.0/24" # This range (10.10.1.0/24) will be authorized
   region        = var.region
   network       = google_compute_network.chris_vpc.id
 }
