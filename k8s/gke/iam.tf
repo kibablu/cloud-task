@@ -1,6 +1,3 @@
-# ------------------------------------------------
-# IAM Service Account for GKE Nodes & Permissions
-# ------------------------------------------------
 resource "google_service_account" "gke_node_sa" {
   account_id   = "gke-node-sa"
   display_name = "GKE Node Service Account with Secret Accessor"
