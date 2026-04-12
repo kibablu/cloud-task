@@ -1,4 +1,3 @@
-# Cloud Router (NAT prerequisite)
 resource "google_compute_router" "medic_nat_router" {
   name    = "medic-nat-router"
   network = google_compute_network.vpc.self_link
