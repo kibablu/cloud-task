@@ -1,8 +1,7 @@
-# Define variables for project ID and region
 variable "gcp_project_id" {
   description = "The GCP project ID"
   type        = string
-  default     = "PROJECT_ID" # Change this to your GCP project ID
+  default     = "PROJECT_ID" 
 }
 
 variable "gcp_region" {
