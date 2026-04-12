@@ -1,6 +1,5 @@
 # Block all unauthenticated access (Default behavior).
 # Authorize IAP to invoke Cloud Run
-# IAP uses its own system service account to 'talk' to your service.
 resource "google_cloud_run_v2_service_iam_member" "iap_to_run_invoker" {
   location = google_cloud_run_v2_service.n8n.location
   name     = google_cloud_run_v2_service.n8n.name
