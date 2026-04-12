@@ -1,8 +1,6 @@
-# Static IP for External Ingress (gce) 
 resource "google_compute_global_address" "ingress_static_ip" {
   name         = "chris-ingress-global"
 }
-
 
 resource "google_compute_instance" "bastion_vm" {
   name         = "chris-bastion-vm"
