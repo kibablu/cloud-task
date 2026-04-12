@@ -1,4 +1,4 @@
-# Create a Cloud Router for Cloud NAT
+# Cloud Router for Cloud NAT
 resource "google_compute_router" "nat_router" {
   name    = "nat-router"
   region  = var.region
@@ -6,7 +6,7 @@ resource "google_compute_router" "nat_router" {
   description = "Cloud Router for NAT to allow MIG instances internet access"
 }
 
-# Create a Cloud NAT for the MIG subnet
+# Cloud NAT for the MIG subnet
 resource "google_compute_router_nat" "nat" {
   name                               = "nat-config"
   router                             = google_compute_router.nat_router.name
