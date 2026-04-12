@@ -1,4 +1,3 @@
-# Use locals and templatefile() instead of the deprecated data "template_file"
 locals {
   startup_script = templatefile("${path.module}/scripts/cloud_sql_proxy_install.sh", {
     # Pass the connection name as a template variable
