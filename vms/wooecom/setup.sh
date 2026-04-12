@@ -31,7 +31,6 @@ sudo yum install -y httpd php php-mysqlnd php-gd php-xml php-mbstring wget polic
 
 # Install Google Cloud SDK for Secret Manager access
 echo "STARTUP SCRIPT DEBUG: Installing Google Cloud SDK..."
-# FIX: Added 'sudo' to tee to write to the /etc directory
 sudo tee /etc/yum.repos.d/google-cloud-sdk.repo <<EOM
 [google-cloud-sdk]
 name=Google Cloud SDK
@@ -46,7 +45,6 @@ sudo yum install -y google-cloud-sdk
 
 # 2. Install Cloud SQL Auth Proxy
 echo "STARTUP SCRIPT DEBUG: Installing Cloud SQL Auth Proxy..."
-# FIX: Added 'sudo' because the destination is a root-owned directory (/usr/local/bin)
 sudo wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O /usr/local/bin/cloud_sql_proxy
 sudo chmod +x /usr/local/bin/cloud_sql_proxy
 
@@ -58,7 +56,6 @@ DB_PASSWORD=$(gcloud secrets versions access latest --secret="$DB_SECRET_ID" --p
 # 5. Start the Cloud SQL Auth Proxy in the background
 # NOTE: The proxy itself does not require sudo, but the rest of the script does.
 echo "STARTUP SCRIPT DEBUG: Starting Cloud SQL Auth Proxy..."
-# FIX: Removed -credential_file flag to rely on the VM's attached Service Account (Application Default Credentials)
 /usr/local/bin/cloud_sql_proxy -instances="$DB_CONNECTION_NAME"=tcp:3306 &
 
 # Wait a moment for the proxy to start
@@ -70,14 +67,11 @@ cd /tmp
 sudo wget -q https://wordpress.org/latest.tar.gz
 tar -zxvf latest.tar.gz
 
-# FIX: Explicitly create the /var/www/html directory before copying files
 sudo mkdir -p /var/www/html/ 
 
-# FIX: Added 'sudo' for copying files into the /var/www/html directory
 sudo cp -R wordpress/* /var/www/html/
 
 # Create wp-config.php content dynamically using the retrieved password
-# FIX: Added 'sudo' to cat/redirect to write to the protected directory
 sudo cat <<EOT > /var/www/html/wp-config.php
 <?php
 define( 'DB_NAME', '$DB_NAME' );
@@ -110,24 +104,20 @@ echo "STARTUP SCRIPT DEBUG: Setting permissions and starting services..."
 
 # === CRITICAL FIXES FOR DB CONNECTION ===
 
-# FIX 1: Allow httpd (PHP) to make outgoing network connections (REQUIRED for Cloud SQL Proxy)
 echo "STARTUP SCRIPT DEBUG: Fixing SELinux boolean for HTTPD network access..."
 sudo setsebool -P httpd_can_network_connect on
 
-# FIX 2: Ensure FirewallD isn't blocking local traffic (shouldn't be, but good check)
 echo "STARTUP SCRIPT DEBUG: Ensuring Firewalld doesn't block local loopback..."
 sudo firewall-cmd --zone=public --add-port=3306/tcp --permanent || true
 sudo firewall-cmd --reload || true
 # ========================================
 
-# FIX: Added 'sudo' to chown and chcon for permission changes
 sudo chown -R apache:apache /var/www/html
 
 # SELinux context fixes for web content and writeable uploads
 sudo chcon -R -t httpd_sys_content_t /var/www/html
 sudo chcon -t httpd_sys_rw_content_t /var/www/html/wp-content
 
-# FIX: Added 'sudo' to systemctl commands
 sudo systemctl enable httpd
 sudo systemctl start httpd
 sudo systemctl enable php-fpm
