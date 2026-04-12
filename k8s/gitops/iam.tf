@@ -1,4 +1,3 @@
-# Create the Google Service Account (GSA) ---
 resource "google_service_account" "gke_workload_sa" {
   account_id   = "chris-app-gsa"
   display_name = "Chris App Workload Identity SA"
