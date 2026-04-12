@@ -1,13 +1,8 @@
-# ------------------------------------------------
-# Bastion/Jump Host VM for Cluster Access
-# ------------------------------------------------
-
-# Bastion host VM instance
 resource "google_compute_instance" "bastion_host" {
   name         = "bastion-host"
-  machine_type = "e2-small" # A small, cost-effective machine type
+  machine_type = "e2-small" 
   zone         = var.gcp_zone
-  tags         = ["allow-ssh"] # Tag for the SSH firewall rule
+  tags         = ["allow-ssh"] 
 
   boot_disk {
     initialize_params {
