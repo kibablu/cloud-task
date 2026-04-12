@@ -13,7 +13,7 @@ resource "google_container_cluster" "chris_gke_cluster" {
 
   master_authorized_networks_config {
     cidr_blocks {
-      cidr_block   = "0.0.0.0/0" # WARNING: Open to the world. Replace with your IP.
+      cidr_block   = "0.0.0.0/0" # WARNING: Open to the world
       display_name = "Public Access"
     }
   }
@@ -42,9 +42,6 @@ resource "google_container_node_pool" "primary_nodes" {
     disk_type    = "pd-balanced"
     disk_size_gb = 50
     tags         = ["gke-node"]
-
-    # Removed custom service account to use the Compute Engine default service account
-    # If you want to be explicit, you can omit the service_account line entirely.
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
