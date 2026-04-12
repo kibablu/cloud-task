@@ -13,17 +13,12 @@ provider "google" {
   zone    = "us-central1-a"       
 }
 
-// creates a new Virtual Private Cloud (VPC) network.
-// we set auto_create_subnetworks to false because we will define a custom subnetwork.
 
 resource "google_compute_network" "custom_vpc" {
   name                    = "custom-vpc-network"
-  auto_create_subnetworks = false // We will create a custom subnet
+  auto_create_subnetworks = false 
   routing_mode            = "REGIONAL" 
 }
-
-// creates a subnetwork within our custom VPC.
-// IP CIDR range is set to /28 2 * (32-28) IPs.
 
 resource "google_compute_subnetwork" "custom_subnet" {
   name          = "custom-subnet-us-central1"
@@ -31,9 +26,6 @@ resource "google_compute_subnetwork" "custom_subnet" {
   network       = google_compute_network.custom_vpc.id
   region        = "us-central1"    
 }
-
-// creates a firewall rule that allows incoming TCP traffic on ports 22 (SSH), 80 (HTTP), and 3360 (custom).
-// it applies to all instances within the vpc created.
 
 resource "google_compute_firewall" "allow_custom_traffic" {
   name    = "fw-allow-ssh-http-custom-tcp"
@@ -46,8 +38,6 @@ resource "google_compute_firewall" "allow_custom_traffic" {
 
   source_ranges = ["0.0.0.0/0"] 
 }
-
-// creates a  virtual machine with the specified characteristics.
 
 resource "google_compute_instance" "centos_vm" {
   name         = "my-centos-vm"
@@ -84,7 +74,7 @@ resource "google_dns_managed_zone" "primary_zone" {
   }
 }
 
-# "A" Record for the root domain (example.com)
+# A Record for the root domain (example.com)
 resource "google_dns_record_set" "root_a_record" {
   name = google_dns_managed_zone.primary_zone.dns_name
   type = "A"
@@ -93,7 +83,7 @@ resource "google_dns_record_set" "root_a_record" {
   rrdatas = ["external IP"]
 }
 
-# "CNAME" Record for the "www" subdomain (www.example.com)
+# CNAME Record for the "www" subdomain (www.example.com)
 resource "google_dns_record_set" "www_cname_record" {
   name = "www.${google_dns_managed_zone.primary_zone.dns_name}"
   type = "CNAME"
