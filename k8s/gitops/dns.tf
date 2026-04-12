@@ -1,7 +1,6 @@
-# --- Cloud DNS Public Managed Zone ---
 resource "google_dns_managed_zone" "chris_dns_zone" {
   name        = "chris-public-zone"
-  dns_name    = "${var.domain_name}." # This will use "klaudmazoezi.top."
+  dns_name    = "${var.domain_name}." 
   description = "Public DNS zone for Chris project GKE ingress"
   visibility  = "public"
 }
