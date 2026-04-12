@@ -1,5 +1,3 @@
-# --- n8n Access Information ---
-
 output "n8n_url" {
   value       = "https://${var.domain_name}"
   description = "The primary custom URL for n8n instance."
