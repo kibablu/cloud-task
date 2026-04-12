@@ -4,7 +4,6 @@ resource "google_storage_bucket" "public_objects" {
   location                    = var.region
   uniform_bucket_level_access = true
   force_destroy               = true
-  #description                 = "Storage bucket for WordPress media and assets"
 }
 
 # Allow all users to view objects (makes objects public, but not the bucket itself)
