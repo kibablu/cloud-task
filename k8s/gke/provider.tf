@@ -22,10 +22,8 @@ provider "google" {
   region  = var.gcp_region
 }
 
-# Get current Google Cloud auth token
 data "google_client_config" "current" {}
 
-# Enable necessary Google Cloud APIs
 resource "google_project_service" "gcp_apis" {
   for_each = toset([
     "compute.googleapis.com",
@@ -39,10 +37,6 @@ resource "google_project_service" "gcp_apis" {
   project            = var.gcp_project_id
   disable_on_destroy = false
 }
-
-# ------------------------------------------------
-# Kubernetes & Helm Provider Configuration
-# ------------------------------------------------
 
 # Data source to fetch authentication details for the ArgoCD GKE cluster
 data "google_container_cluster" "argocd_cluster_auth" {
