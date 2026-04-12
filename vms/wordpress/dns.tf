@@ -1,11 +1,10 @@
-# Create a Cloud DNS managed zone for your domain
 resource "google_dns_managed_zone" "main" {
-  name     = "exmaple-name" # change for your domain
+  name     = "exmaple-name" 
   dns_name = "${var.wp_domain}."
   description = "Managed zone for example domain"
 }
 
-# Create an A record for the root domain, pointing to the load balancer IP
+# A record for the root domain, pointing to the load balancer IP
 resource "google_dns_record_set" "a_record" {
   name         = "${var.wp_domain}."
   type         = "A"
@@ -14,7 +13,7 @@ resource "google_dns_record_set" "a_record" {
   rrdatas      = [google_compute_global_address.lb_ip.address]
 }
 
-# Create a CNAME record for the www subdomain, pointing to the root domain
+# CNAME record for the www subdomain, pointing to the root domain
 resource "google_dns_record_set" "cname_record" {
   name         = "${var.wp_www_domain}."
   type         = "CNAME"
