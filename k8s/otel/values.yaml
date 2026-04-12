@@ -1,6 +1,4 @@
-# --- OpenTelemetry Demo GKE Configuration ---
 components:
-  # 1. Fix the Frontend Proxy (Routing & Health Checks)
   frontend-proxy:
     service:
       type: NodePort
@@ -20,7 +18,6 @@ components:
               pathType: ImplementationSpecific
               port: 8080
 
-  # 2. Fix the Frontend (Product Display & Browser Traces)
   frontend:
     envOverrides:
       # This tells the browser to send spans to your public domain instead of localhost
