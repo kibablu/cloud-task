@@ -5,7 +5,7 @@ resource "google_dns_managed_zone" "chris_dns_zone" {
   visibility  = "public"
 }
 
-# Create an A record for the root domain pointing to the Ingress IP
+# A record for the root domain pointing to the Ingress IP
 resource "google_dns_record_set" "root_a_record" {
   name         = google_dns_managed_zone.chris_dns_zone.dns_name
   type         = "A"
