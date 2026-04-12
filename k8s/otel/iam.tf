@@ -1,4 +1,3 @@
-# Service Account for the Bastion VM
 resource "google_service_account" "bastion_sa" {
   account_id   = "gke-bastion-sa"
   display_name = "GKE Bastion Service Account"
