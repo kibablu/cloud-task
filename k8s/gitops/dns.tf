@@ -15,7 +15,7 @@ resource "google_dns_record_set" "root_a_record" {
   rrdatas      = [google_compute_global_address.ingress_static_ip.address]
 }
 
-# Create a CNAME record for ArgoCD to point to the root domain
+# CNAME record for ArgoCD to point to the root domain
 resource "google_dns_record_set" "argocd_cname_record" {
   name         = "argocd.${google_dns_managed_zone.chris_dns_zone.dns_name}"
   type         = "CNAME"
@@ -24,7 +24,7 @@ resource "google_dns_record_set" "argocd_cname_record" {
   rrdatas      = [google_dns_managed_zone.chris_dns_zone.dns_name]
 }
 
-# Create a CNAME record for Grafana to point to the root domain
+# CNAME record for Grafana to point to the root domain
 resource "google_dns_record_set" "grafana_cname_record" {
   name         = "grafana.${google_dns_managed_zone.chris_dns_zone.dns_name}"
   type         = "CNAME"
