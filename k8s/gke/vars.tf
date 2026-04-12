@@ -1,7 +1,7 @@
 variable "gcp_project_id" {
   description = "The ID of the GCP project where resources will be created"
   type        = string
-  default     = "PROJECT_ID" # !!! CHANGE THIS !!!
+  default     = "PROJECT_ID" 
 }
 
 variable "gcp_region" {
