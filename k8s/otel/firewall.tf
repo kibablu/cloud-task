@@ -1,14 +1,12 @@
 resource "google_compute_firewall" "allow_ssh_from_bastion_to_nodes" {
   name    = "allow-ssh-from-bastion"
-  network = google_compute_network.chris_vpc.name # Replace with your VPC name
+  network = google_compute_network.chris_vpc.name 
   
-  # Allow SSH
   allow {
     protocol = "tcp"
     ports    = ["22"]
   }
 
-  # Target the nodes (GKE adds 'gke-cluster-name' tags automatically, 
   target_tags = ["gke-node"] 
 
   # Only allow the internal range of your VPC/Bastion Subnet
