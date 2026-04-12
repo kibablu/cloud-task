@@ -24,8 +24,7 @@ resource "google_compute_firewall" "allow_ssh_to_bastion" {
     ports    = ["22"]
   }
 
-  # This rule targets the bastion VM. Ensure your bastion VM instance
-  # has the "bastion-vm" network tag.
+  # This rule targets the bastion VM
   target_tags = ["bastion-host"]
 
   source_ranges = ["0.0.0.0/0"]
