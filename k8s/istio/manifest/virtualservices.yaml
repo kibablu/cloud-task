@@ -1,0 +1,82 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: bookinfo
+  namespace: istio-ingress
+spec:
+  hosts:
+    - "klaudmazoezi.top"
+  gateways:
+    - bookinfo-gateway
+  http:
+    - match:
+        - uri:
+            exact: /productpage
+        - uri:
+            prefix: /static
+        - uri:
+            exact: /login
+        - uri:
+            exact: /logout
+        - uri:
+            prefix: /api/v1/products
+      route:
+        - destination:
+            host: productpage.default.svc.cluster.local
+            port:
+              number: 9080
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: grafana
+  namespace: istio-ingress
+spec:
+  hosts:
+    - "grafana.klaudmazoezi.top"
+  gateways:
+    - observability-gateway
+  http:
+    - route:
+        - destination:
+            host: kube-prometheus-stack-grafana.monitoring.svc.cluster.local
+            port:
+              number: 80
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: kiali
+  namespace: istio-ingress
+spec:
+  hosts:
+    - "kiali.klaudmazoezi.top"
+  gateways:
+    - observability-gateway
+  http:
+    - route:
+        - destination:
+            host: kiali.istio-system.svc.cluster.local
+            port:
+              number: 20001
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: jaeger
+  namespace: istio-ingress
+spec:
+  hosts:
+    - "jaeger.klaudmazoezi.top"
+  gateways:
+    - observability-gateway
+  http:
+    - route:
+        - destination:
+            host: jaeger.istio-system.svc.cluster.local
+            port:
+              number: 16686
+

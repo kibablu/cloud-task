@@ -1,0 +1,75 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: bookinfo-gateway
+  namespace: istio-ingress
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 8080
+        name: http
+        protocol: HTTP
+      hosts:
+        - "klaudmazoezi.top"
+      tls:
+        httpsRedirect: true
+    - port:
+        number: 8443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "klaudmazoezi.top"
+      tls:
+        mode: SIMPLE
+        credentialName: bookinfo-tls
+
+---
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: observability-gateway
+  namespace: istio-ingress
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 8080
+        name: http-observability
+        protocol: HTTP
+      hosts:
+        - "grafana.klaudmazoezi.top"
+        - "kiali.klaudmazoezi.top"
+        - "jaeger.klaudmazoezi.top"
+      tls:
+        httpsRedirect: true
+    - port:
+        number: 8443
+        name: https-grafana
+        protocol: HTTPS
+      hosts:
+        - "grafana.klaudmazoezi.top"
+      tls:
+        mode: SIMPLE
+        credentialName: grafana-tls
+    - port:
+        number: 8443
+        name: https-kiali
+        protocol: HTTPS
+      hosts:
+        - "kiali.klaudmazoezi.top"
+      tls:
+        mode: SIMPLE
+        credentialName: kiali-tls
+    - port:
+        number: 8443
+        name: https-jaeger
+        protocol: HTTPS
+      hosts:
+        - "jaeger.klaudmazoezi.top"
+      tls:
+        mode: SIMPLE
+        credentialName: jaeger-tls
+
