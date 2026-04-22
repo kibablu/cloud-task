@@ -1,0 +1,30 @@
+output "cluster_name" {
+  description = "GKE cluster name"
+  value       = google_container_cluster.primary.name
+}
+
+output "cluster_zone" {
+  description = "GKE cluster zone"
+  value       = google_container_cluster.primary.location
+}
+
+output "cluster_endpoint" {
+  description = "GKE master endpoint"
+  value       = google_container_cluster.primary.endpoint
+  sensitive   = true
+}
+
+output "node_service_account" {
+  description = "Email of the GKE node service account"
+  value       = google_service_account.gke_node_sa.email
+}
+
+output "vpc_name" {
+  description = "VPC network name"
+  value       = google_compute_network.vpc.name
+}
+
+output "get_credentials_command" {
+  description = "Run this to configure kubectl after apply"
+  value       = "gcloud container clusters get-credentials ${google_container_cluster.primary.name} --zone ${google_container_cluster.primary.location} --project ${var.project_id}"
+}
