@@ -12,7 +12,7 @@
 [![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF.svg?style=for-the-badge&logo=GitHub-Actions&logoColor=white)](https://github.com/features/actions)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Open in Cloud Shell](https://gstatic.com/cloudshell/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/kibablu/cloud-task)
+[![Open in Cloud Shell](https://gstatic.com/cloudshell/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/)
 
 > A hands-on portfolio of real-world DevOps and cloud infrastructure projects — covering VMs, containers, Kubernetes, serverless, and self-hosted platforms. Built with Terraform (HCL), Shell scripting, Docker, and more.
 
