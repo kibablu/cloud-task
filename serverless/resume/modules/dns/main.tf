@@ -1,4 +1,3 @@
-###############################################################
 # Module: dns
 #
 # Options:
@@ -7,7 +6,6 @@
 #
 # Creates an A record pointing var.domain → lb_ip_address.
 # If var.domain is an apex (no subdomain), also creates a www CNAME.
-###############################################################
 
 locals {
   # Ensure the DNS name always ends with a trailing dot (RFC 1035)
