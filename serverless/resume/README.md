@@ -1,3 +1,6 @@
+<img width="800" height="385" alt="resume" src="https://github.com/user-attachments/assets/4546911c-f3ca-4b3a-95b0-b1abcb8bc7b3"/>
+
+
 # Cloud Resume Challenge — GCP
 
 A fully serverless, production-grade resume hosted on Google Cloud Platform, built as part of the [Cloud Resume Challenge](https://cloudresumechallenge.dev/docs/the-challenge/googlecloud/). Every piece of infrastructure is written as code using Terraform — zero manual console clicks.
