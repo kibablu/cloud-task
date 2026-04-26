@@ -1,0 +1,120 @@
+{
+  "name": "Chat to MCP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://_LOCATION-PROJECT_ID.cloudfunctions.net/oidc-token-broker",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "target_audience",
+              "value": "https://RUN_URL._LOCATION.run.app"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 5000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        256,
+        0
+      ],
+      "id": "c6970c36-139c-496f-ae2c-23f5890e42cd",
+      "name": "HTTP Request",
+      "credentials": {
+        "googleApi": {
+          "id": "MqyaaJycdXQIJHJj",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $node[\"When chat message received\"].json[\"chatInput\"] }}",
+        "options": {
+          "systemMessage": "You are a soccer stats expert. Use the MCP tool to find xG and match data. Always use the tools provided."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        520,
+        0
+      ],
+      "id": "15e24ad5-0753-458a-8f6a-a938aa037016",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:7b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        400,
+        220
+      ],
+      "id": "1db67938-ebbd-49c1-9ddf-62908c9e03e9",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "Ezn3kLZnax0ZHU5X",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "=https://soccerdata-mcp-724259570267.us-central1.run.app/sse?token={{ $node[\"HTTP Request\"].json[\"id_token\"] }}",
+        "authentication": "none",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        760,
+        180
+      ],
+      "id": "4ad8ec6a-58bb-4cd9-b91c-594b9076cbee",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "availableInChat": true,
+        "agentName": "fotstat"
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "89c1f83f-458e-4c16-82f3-f8012582b0d5",
+      "name": "When chat message received"
+    }
+  ],
+  "connections": {
+    "HTTP Request": {
+      "main": [[{ "node": "AI Agent", "type": "main", "index": 0 }]]
+    },
+    "When chat message received": {
+      "main": [[{ "node": "HTTP Request", "type": "main", "index": 0 }]]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [[{ "node": "AI Agent", "type": "ai_languageModel", "index": 0 }]]
+    },
+    "MCP Client": {
+      "ai_tool": [[{ "node": "AI Agent", "type": "ai_tool", "index": 0 }]]
+    }
+  }
+}
