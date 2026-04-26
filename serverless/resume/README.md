@@ -84,7 +84,7 @@ A fully serverless, production-grade resume hosted on Google Cloud Platform, bui
 ## Repository structure
 
 ```
-cloud-resume-gcp/
+resume/
 ├── main.tf                        # Root — wires all modules together
 ├── variables.tf                   # All input variables
 ├── outputs.tf                     # All outputs (IPs, URLs, function endpoint)
@@ -94,7 +94,7 @@ cloud-resume-gcp/
 │   ├── index.html                 # Resume page (visitor counter JS inline)
 │   └── counter.js                 # Standalone counter snippet (reference)
 │
-├── function_src/                  # Cloud Function source (Python)
+├── src/                  # Cloud Function source (Python)
 │   ├── main.py                    # HTTP handler + Firestore logic
 │   ├── requirements.txt           # Runtime deps (deployed with function)
 │   ├── requirements-dev.txt       # Dev/test deps (never deployed)
@@ -177,8 +177,8 @@ gcloud auth application-default login
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR-USERNAME/cloud-resume-gcp
-cd cloud-resume-gcp
+git clone https://github.com/YOUR-USERNAME/resume
+cd resume
 
 # 2. Configure variables
 cp terraform.tfvars.example terraform.tfvars
